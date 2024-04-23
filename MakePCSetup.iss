@@ -86,12 +86,12 @@ Source: "{#MyAppPkgDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdir
 [Icons]
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}" 
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AfterInstall: ShoutcutRunAsAdmin('{group}\{#MyAppName}.lnk');
-Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon ; AfterInstall: ShoutcutRunAsAdmin('{commondesktop}\{#MyAppName}.lnk');
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename:"{app}\{#MyAppExeName}"; Tasks: quicklaunchicon  ; AfterInstall: ShoutcutRunAsAdmin('{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}.lnk');
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#MyAppName}"; Filename:"{app}\{#MyAppExeName}"; Tasks: quicklaunchicon ; AfterInstall: ShoutcutRunAsAdmin('{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#MyAppName}.lnk');
+//Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon ; AfterInstall: ShoutcutRunAsAdmin('{commondesktop}\{#MyAppName}.lnk');
+//Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Filename:"{app}\{#MyAppExeName}"; Tasks: quicklaunchicon  ; AfterInstall: ShoutcutRunAsAdmin('{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}.lnk');
+//Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#MyAppName}"; Filename:"{app}\{#MyAppExeName}"; Tasks: quicklaunchicon ; AfterInstall: ShoutcutRunAsAdmin('{userappdata}\Microsoft\Internet Explorer\Quick Launch\User Pinned\TaskBar\{#MyAppName}.lnk');
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
+;Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: runascurrentuser nowait postinstall skipifsilent
 
 ;[UninstallRun] 
 ;Filename: http://happyfish.lkgame.com/uninstallsurvey; Flags: shellexec runmaximized; Tasks: ; Languages:
@@ -111,7 +111,7 @@ var
 var 
   dNeedSpaceByte:Longint; //需要的安装的空间大小，（字节)
   PBOldProc:Longint;
-  imgBg1, imgBg2 :Longint;
+  imgBg1, imgBg2, imgBg3_process :Longint;
   btnClose, btnMin:HWND;
 
   DpiScalePctg:integer;
@@ -124,8 +124,9 @@ var
   imgBigIcon1, imgLogo1, imgOneKeySh:Longint;
 
   // page select dir 
-  btnSelectDir1,btnNext1,btnBack1:HWND;
+  btnSelectDir1,btnNext1,btnBack1,btnVerify:HWND;
   edtSelectDir1:TEdit;
+  edtLicense:TMemo;
   chkQuickLaunch:HWND;  // 快速启动栏 (check box )
   lblQuickLaunch:TLabel;// 快速启动栏 (上面的label)
   lblNeedSpace, lblDiskSpace,lblTipWDir :TLabel;
@@ -328,7 +329,15 @@ procedure lblLicenseClick(sender :TObject);
 var
   ErrorCode: Integer;
 begin
-  ShellExec('open', '{#MyAppLkLicenseURL}', '', '', SW_SHOWNORMAL, ewNoWait, ErrorCode);  
+    BtnSetVisibility(btnVerify, true);
+    TconSetVisible(edtLicense, true);
+    // set could not visible
+    BtnSetVisibility(btnSelectDir1, false);
+    BtnSetVisibility(chkLicense, false);
+    TconSetVisible(edtSelectDir1, false);
+    TconSetVisible(lblAgree, false);
+    TconSetVisible(lblLicense, false);
+
 end; 
 
 procedure chkLicenseOnClick(bBtn :HWND);
@@ -352,6 +361,19 @@ procedure btnOneKey_OnClick(hBtn:HWND);
 begin
   WizardForm.NextButton.OnClick(WizardForm);
   WizardForm.NextButton.OnClick(WizardForm);
+end;
+
+procedure btnVerify_OnClick(hBtn:HWND);
+begin
+  
+    BtnSetVisibility(btnVerify, false);
+    TconSetVisible(edtLicense, false);
+    // set  visible
+    BtnSetVisibility(btnSelectDir1, true);
+    BtnSetVisibility(chkLicense, true);
+    TconSetVisible(edtSelectDir1, true);
+    TconSetVisible(lblAgree, true);
+    TconSetVisible(lblLicense, true);
 end;
 
 procedure OnHoverControlChanged(Control: TControl);
@@ -558,13 +580,13 @@ begin
   *)
 end;
 
-
+ // install process
 Const 
   InsBgAni_HoldTime = 5000;
   InsBgAni_SwitchTime = 500;
   InsBgAni_ImgCount = {#InsBgAniPicCount};
 var 
-  InsBgAni_ImgArr : array[0 .. InsBgAni_ImgCount ] of Longint;
+  //InsBgAni_ImgArr : array[0 .. InsBgAni_ImgCount ] of Longint;
   InsBgAni_Time : Longint;
 
 procedure PageInstall_TimerProc(H: LongWord; Msg: LongWord; IdEvent: LongWord; Time: LongWord);
@@ -581,7 +603,7 @@ begin
 	
 	idx := InsBgAni_Time div (InsBgAni_HoldTime + InsBgAni_SwitchTime);
   t0 := InsBgAni_Time mod (InsBgAni_HoldTime + InsBgAni_SwitchTime);
-	if t0 < InsBgAni_HoldTime then 
+	(*if t0 < InsBgAni_HoldTime then 
 	begin 
 		for i:= 0 to InsBgAni_ImgCount do 
 		begin 
@@ -615,6 +637,7 @@ begin
 		   end;
 		end;
 	end;
+  *)
     ImgApplyChanges(WizardForm.Handle);
   end;
 end;
@@ -624,7 +647,7 @@ var
   w:longint;
 begin
   w:=Round(577*pr/100);
-  ImgSetPosition(imgProgressBar, DpiScale(38), DpiScale(429), DpiScale(w),DpiScale(29));
+  ImgSetPosition(imgProgressBar, DpiScale(38), DpiScale(370), DpiScale(w),DpiScale(29));
   ImgSetVisiblePart(imgProgressBar,0,0, w, 29);
   ImgApplyChanges(WizardForm.Handle);
   lblTipProgress.Caption := Format('正在为您安装 %d%%',[Round(pr)]);
@@ -636,7 +659,7 @@ var
 begin
   
   imgProgressBarBg:=ImgLoad(WizardForm.Handle,ExpandConstant('{tmp}\progressBg.png'), 0,0,0,0,True,True);
-  ImgSetPosition(imgProgressBarBg, DpiScale(38), DpiScale(429), DpiScale(577),DpiScale(19));
+  ImgSetPosition(imgProgressBarBg, DpiScale(38), DpiScale(370), DpiScale(577),DpiScale(19));
   imgProgressBar:=ImgLoad(WizardForm.Handle,ExpandConstant('{tmp}\progress.png'),0,0,0,0,True,True);
   
   lblTipProgress := TLabel.Create(WizardForm);
@@ -647,9 +670,9 @@ begin
     Transparent := true;
     Font.Size:= 10;
     Font.Name:='微软雅黑';
-    Font.Color:=$ffffff;
+    Font.Color:=$000000;
     Left := DpiScale(275);
-    Top := DpiScale(400);
+    Top := DpiScale(340);
   end;
 
   InsBgAni_Time := -1;//Stop ani;  
@@ -665,7 +688,8 @@ procedure InitGui_PageFinish();
 var
    tmpFont:TFont;
 begin 
-  btnFinish:=BtnCreate(WizardForm.Handle, DpiScale(240), DpiScale(384), DpiScale(177),DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),1,False)
+  btnFinish:=BtnCreate(WizardForm.Handle,DpiScale(240),DpiScale(200),DpiScale(177), DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),2,False)
+
   BtnSetText(btnFinish, '完成安装');
   tmpFont := TFont.Create;
   with tmpFont do begin 
@@ -726,8 +750,9 @@ begin
   //BtnSetVisibility(btnBack1,      isWpSelectDir);
   //BtnSetVisibility(chkQuickLaunch,isWpSelectDir);
   
-  for i := 1 to InsBgAni_ImgCount do
-     ImgSetVisibility(InsBgAni_ImgArr[i-1], isWpInstalling);
+  //for i := 1 to InsBgAni_ImgCount do
+    // ImgSetVisibility(InsBgAni_ImgArr[i-1], isWpInstalling);
+  ImgSetVisibility(imgBg3_process,   isWpInstalling);
   ImgSetVisibility(imgProgressBar,   isWpInstalling);
   ImgSetVisibility(imgProgressBarBg, isWpInstalling);
   TconSetVisible(lblTipProgress,     isWpInstalling);
@@ -789,6 +814,16 @@ begin
   end;
 end;
 
+function ReadFileToString(param: String): String;
+var
+  FileContent: AnsiString;
+  FileName: String;
+begin
+  Result := '';
+  FileName := ExpandConstant('{tmp}\sc.txt'); 
+  if loadStringFromFile(FileName, FileContent) then
+    Result := RemoveQuotes(string(FileContent));
+end;
 procedure InitGui_PageWelcome();
 var
   BtnOneKeyFont:TFont;
@@ -855,7 +890,37 @@ begin
     Left := DpiScale(50);
     Top := DpiScale(378);
   end;
+  // init the license click component
+  // text edit
+  edtLicense := TMemo.Create(WizardForm);
+  with edtLicense do
+  begin
+    Parent := WizardForm;
+    Text := ReadFileToString('');
+    Font.Size := 10;
+    Font.Color := $555555;
+    Left := DpiScale(20);
+    Top := DpiScale(20);
+    Width := DpiScale(620);
+    Height := DpiScale(300);
+    ScrollBars := ssVertical; // 添加垂直滚动条以处理文本溢出
+    WordWrap := True; // 启用文字换行
+  end;
+  TconSetVisible(edtLicense, false);
+  // verify button
+  btnVerify:=BtnCreate(WizardForm.Handle,DpiScale(305),DpiScale(345),DpiScale(50), DpiScale(30), ExpandConstant('{tmp}\btn.png'),2,False)
   
+  BtnSetText(btnVerify, '确认');
+  BtnOneKeyFont := TFont.Create;
+  with BtnOneKeyFont do begin 
+	Size := 10;
+	Name:='黑体';
+  Color:=$986800;
+  end;
+  BtnSetFont(btnVerify, BtnOneKeyFont.Handle);
+  BtnSetEvent(btnVerify,BtnClickEventID,WrapBtnCallback(@btnVerify_OnClick,2));
+  BtnSetVisibility(btnVerify, false);
+  //
   lblLicense := TLabel.Create(WizardForm);
   with lblLicense do
   begin
@@ -864,7 +929,7 @@ begin
     Transparent := true;
     Font.Size:= 10
     Font.Name:='微软雅黑'
-    Font.Color:=$00BFFF
+    Font.Color:=$CDCD00 //未知原因，这里的字体颜色被取反了（类似于取反，但是不完全是），导致这里设置黄色才能展现出最终的蓝色
     Left:= DpiScale(143);
     Top := DpiScale(378);
     OnClick:=@lblLicenseClick;
@@ -888,7 +953,7 @@ begin
     OnChange:=@EdtSelectDir1_EditChanged;
   end;
  
-  btnSelectDir1:=BtnCreate(WizardForm.Handle,DpiScale(590),DpiScale(330),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
+  btnSelectDir1:=BtnCreate(WizardForm.Handle,DpiScale(560),DpiScale(330),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
   BtnSetEvent(btnSelectDir1,BtnClickEventID,WrapBtnCallback(@BtnSelectDir1_OnClick,1));
   BtnSetText(btnSelectDir1, '浏览');
   tmpFont := TFont.Create;
@@ -946,6 +1011,8 @@ begin
   ExtractTemporaryFile('check.png');
   ExtractTemporaryFile('progress.png');
   ExtractTemporaryFile('progressBg.png');
+  ExtractTemporaryFile('sc.txt');
+  ExtractTemporaryFile('process.png');
 
   for i := 1 to InsBgAni_ImgCount do
     ExtractTemporaryFile(Format('pic%d.png',[i]) );
@@ -955,13 +1022,15 @@ begin
   imgBg1 := ImgLoad(WizardForm.Handle,ExpandConstant('{tmp}\bg.png'),(0),(0),winW,winH,True,True);
   imgBg2 := ImgLoad(WizardForm.Handle,ExpandConstant('{tmp}\bg2.png'),(0),(0),winW,winH,True,True);
   ImgSetVisibility(imgBg2,false);
-
+  imgBg3_process := ImgLoad(WizardForm.Handle,ExpandConstant('{tmp}\process.png'),(0),(0),winW,winH,True,True);
+  ImgSetVisibility(imgBg3_process,false);
+  (*
   for i := 1 to InsBgAni_ImgCount do
   begin
     InsBgAni_ImgArr[i-1] := ImgLoad( WizardForm.Handle, ExpandConstant(Format('{tmp}\pic%d.png',[i])),(0),(0), winW, winH,True,True);
     ImgSetVisibility(InsBgAni_ImgArr[i-1],false);
   end;
-
+  *)
   btnClose:= BtnCreate(WizardForm.Handle, DpiScale(617), DpiScale(2), DpiScale(39),DpiScale(19), ExpandConstant('{tmp}\btclose.png'),1,False)
   BtnSetEvent(btnClose,BtnClickEventID,WrapBtnCallback(@BtnClose_OnClick,1));
 
