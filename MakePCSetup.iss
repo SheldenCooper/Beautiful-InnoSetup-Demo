@@ -284,12 +284,12 @@ begin
  end;
 end;
 
-procedure PageState_Set(idx:integer);
-begin
-  SetTLabelBold(PageStateLbl1, idx = 1);
-  SetTLabelBold(PageStateLbl2, idx = 2);
-  SetTLabelBold(PageStateLbl3, idx = 3);
-end;
+//procedure PageState_Set(idx:integer);
+//begin
+  //SetTLabelBold(PageStateLbl1, idx = 1);
+  //SetTLabelBold(PageStateLbl2, idx = 2);
+  //SetTLabelBold(PageStateLbl3, idx = 3);
+//end;
 
 procedure TconSetVisible(lbl:TControl; bVis:boolean);
 begin
@@ -370,89 +370,7 @@ begin
 end;
 
 
-procedure InitGui_PageWelcome();
-var
-  BtnOneKeyFont:TFont;
-  tmpFont:TFont;
-begin
-  chkLicense :=BtnCreate(WizardForm.Handle,DpiScale(33),DpiScale(410),
-  DpiScale(15),DpiScale(15), ExpandConstant('{tmp}\check.png'),1, True);
-  BtnSetChecked(chkLicense, True); 
-  BtnSetEvent(chkLicense,BtnClickEventID,WrapBtnCallback(@chkLicenseOnClick,1));
-  
-  //btnCustomInstall := BtnCreate(WizardForm.Handle,DpiScale(543),DpiScale(409), DpiScale(87), DpiScale(15), ExpandConstant('{tmp}\btnCustomInstall.png'),1,False)
-  //BtnSetEvent(btnCustomInstall,BtnClickEventID,WrapBtnCallback(@btnCustomInstallOnClick,1));
-  tmpFont := TFont.Create;
-  with tmpFont do begin 
-    Size := 12;
-    Name :='黑体';
-    Color:=$986800;
-  end;
 
-  btnCustomInstall:=BtnCreate(WizardForm.Handle,DpiScale(540),DpiScale(417),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
-  BtnSetEvent(btnCustomInstall,BtnClickEventID,WrapBtnCallback(@btnCustomInstallOnClick,1));
-  BtnSetText(btnCustomInstall, '自定义');
-  BtnSetFont(btnCustomInstall, tmpFont.Handle);
-  BtnSetFontColor(btnCustomInstall,$986800,$986800,$986800,$AFAFAF);
-
-
-
-
-  btnOneKey:=BtnCreate(WizardForm.Handle,DpiScale(240),DpiScale(260),DpiScale(177), DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),1,False)
-  
-  BtnSetText(btnOneKey, '一键安装');
-  BtnOneKeyFont := TFont.Create;
-  with BtnOneKeyFont do begin 
-	Size := 20;
-	Name:='黑体';
-	Color:=$ffffff;
-  end;
-  BtnSetFont(btnOneKey, BtnOneKeyFont.Handle);
-  BtnSetFontColor(btnOneKey,$FAFAFA,$FFFFFF,$FFFFFF,$FFFFFF);
-  BtnSetEvent(btnOneKey,BtnClickEventID,WrapBtnCallback(@btnOneKey_OnClick,1));
- 
-  lblWelcome := TLabel.Create(WizardForm);
-  with lblWelcome do
-  begin
-    Parent := WizardForm;
-    Caption := '欢迎安装XXX应用程序';
-    Transparent := true;
-    Font.Size:= 20
-    Font.Name:='黑体'
-    Font.Color:=$ffffff
-    Left := DpiScale(190);
-    Top := DpiScale(195);
-  end;
-
-  lblAgree := TLabel.Create(WizardForm);
-  with lblAgree do
-  begin
-    Parent := WizardForm;
-    Caption := '我已阅读并同意';
-    Transparent := true;
-    Font.Size:= 10
-    Font.Name:='微软雅黑'
-    Font.Color:=$ffffff
-    Left := DpiScale(50);
-    Top := DpiScale(408);
-  end;
-  
-  lblLicense := TLabel.Create(WizardForm);
-  with lblLicense do
-  begin
-    Parent := WizardForm;
-    Caption := '《应用许可协议》';
-    Transparent := true;
-    Font.Size:= 10
-    Font.Name:='微软雅黑'
-    Font.Color:=$ffffff
-    Left:= DpiScale(143);
-    Top := DpiScale(408);
-    OnClick:=@lblLicenseClick;
-    Cursor:=crHand;
-  end;
-  HoverEvent_Init(@OnHoverControlChanged);
-end;
 
 function GetNeedSpaceText():string;
 var 
@@ -493,20 +411,19 @@ begin
   FreeSpace := GetCurDirFreeSpace();
   lblNeedSpace.Caption := GetNeedSpaceText();
   lblDiskSpace.Caption := GetDiskSpaceText(FreeSpace);
-  TconSetVisible(lblTipWDir, (WizardForm.CurPageID = wpSelectDir) and (FreeSpace <= 0) );
 end;
 
 procedure EdtSelectDir1_EditChanged(Sender: TObject);
 begin
   WizardForm.DirEdit.Text:=edtSelectDir1.Text;
-  WhenInstallDirChangeCheckDiskSpace();
+  //WhenInstallDirChangeCheckDiskSpace();
 end;
 
 procedure BtnSelectDir1_OnClick(hBtn:HWND);
 begin
   WizardForm.DirBrowseButton.OnClick(WizardForm);
   edtSelectDir1.Text:=WizardForm.DirEdit.Text;
-  WhenInstallDirChangeCheckDiskSpace();
+  //WhenInstallDirChangeCheckDiskSpace();
 end;
 procedure BtnNext1_OnClick(hBtn:HWND);
 var 
@@ -541,7 +458,7 @@ procedure InitGui_PageSelectDir();
 var
   tmpFont:TFont;
 begin
-
+    (*
   edtSelectDir1 := TEdit.Create(WizardForm);
   with edtSelectDir1 do
   begin
@@ -569,7 +486,7 @@ begin
   end;
   BtnSetFont(btnSelectDir1, tmpFont.Handle);
   BtnSetFontColor(btnSelectDir1,$986800,$986800,$986800,$AFAFAF);
-  
+
   btnNext1:=BtnCreate(WizardForm.Handle,DpiScale(550),DpiScale(417),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
   BtnSetEvent(btnNext1,BtnClickEventID,WrapBtnCallback(@BtnNext1_OnClick,1));
   BtnSetText(btnNext1, '下一步');
@@ -638,7 +555,7 @@ begin
     Left := DpiScale(129);
     Top := DpiScale(167);
   end;
-  WhenInstallDirChangeCheckDiskSpace();
+  *)
 end;
 
 
@@ -748,7 +665,7 @@ procedure InitGui_PageFinish();
 var
    tmpFont:TFont;
 begin 
-  btnFinish:=BtnCreate(WizardForm.Handle, DpiScale(240), DpiScale(404), DpiScale(177),DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),1,False)
+  btnFinish:=BtnCreate(WizardForm.Handle, DpiScale(240), DpiScale(384), DpiScale(177),DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),1,False)
   BtnSetText(btnFinish, '完成安装');
   tmpFont := TFont.Create;
   with tmpFont do begin 
@@ -799,15 +716,15 @@ begin
   ImgSetVisibility(imgBg1,   isWpWelcome or isWpSelectDir);
   ImgSetVisibility(imgLogo1, isWpWelcome or isWpSelectDir);
   
-  TconSetVisible(edtSelectDir1,   isWpSelectDir);
-  TconSetVisible(lblQuickLaunch,  isWpSelectDir);
-  TconSetVisible(lblNeedSpace,    isWpSelectDir);
-  TconSetVisible(lblDiskSpace,    isWpSelectDir);
-  TconSetVisible(lblTipWDir,      false);
-  BtnSetVisibility(btnSelectDir1, isWpSelectDir);
-  BtnSetVisibility(btnNext1,      isWpSelectDir);
-  BtnSetVisibility(btnBack1,      isWpSelectDir);
-  BtnSetVisibility(chkQuickLaunch,isWpSelectDir);
+  TconSetVisible(edtSelectDir1,   isWpWelcome);
+  //TconSetVisible(lblQuickLaunch,  isWpSelectDir);
+  //TconSetVisible(lblNeedSpace,    isWpSelectDir);
+  //TconSetVisible(lblDiskSpace,    isWpSelectDir);
+  //TconSetVisible(lblTipWDir,      false);
+  BtnSetVisibility(btnSelectDir1, isWpWelcome);
+  //BtnSetVisibility(btnNext1,      isWpSelectDir);
+  //BtnSetVisibility(btnBack1,      isWpSelectDir);
+  //BtnSetVisibility(chkQuickLaunch,isWpSelectDir);
   
   for i := 1 to InsBgAni_ImgCount do
      ImgSetVisibility(InsBgAni_ImgArr[i-1], isWpInstalling);
@@ -821,7 +738,6 @@ begin
   if CurPageID = wpWelcome then
   begin
     //Log('CurPageID = wpWelcome');
-    PageState_Set(1);
   end;
   
   if CurPageID = wpSelectDir then
@@ -830,9 +746,8 @@ begin
     //Log(WizardForm.DiskSpaceLabel.Caption);
 	  edtSelectDir1.Text:=WizardForm.DirEdit.Text;
     //Misc_SetTEdit_TextVCenter(edtSelectDir1);
-    WhenInstallDirChangeCheckDiskSpace();
+    //WhenInstallDirChangeCheckDiskSpace();
     //WizardForm.DiskSpaceLabel.Visible:=True;
-    PageState_Set(1);
   end;
 
   if isWpInstalling then
@@ -840,7 +755,6 @@ begin
     SetTaskValueByDesc('quicklaunchicon', isSelectedQuickLaunch);
  
     Notify_Init();
-    PageState_Set(2);
     InsBgAni_Time := 1;
   end
   else
@@ -851,7 +765,6 @@ begin
   if isWpFinished then
   begin
     //Log('CurPageID = wpFinished');
-    PageState_Set(3);
 
     ShellExec('taskbarpin', '{app}\{#MyAppExeName}', '', '', SW_SHOWNORMAL, ewNoWait, nErrCode);
     Notify_DoNotifyFinish();
@@ -876,6 +789,117 @@ begin
   end;
 end;
 
+procedure InitGui_PageWelcome();
+var
+  BtnOneKeyFont:TFont;
+  tmpFont:TFont;
+begin
+  chkLicense :=BtnCreate(WizardForm.Handle,DpiScale(33),DpiScale(378),
+  DpiScale(15),DpiScale(15), ExpandConstant('{tmp}\check.png'),1, True);
+  BtnSetChecked(chkLicense, True); 
+  BtnSetEvent(chkLicense,BtnClickEventID,WrapBtnCallback(@chkLicenseOnClick,1));
+  
+  //btnCustomInstall := BtnCreate(WizardForm.Handle,DpiScale(543),DpiScale(409), DpiScale(87), DpiScale(15), ExpandConstant('{tmp}\btnCustomInstall.png'),1,False)
+  //BtnSetEvent(btnCustomInstall,BtnClickEventID,WrapBtnCallback(@btnCustomInstallOnClick,1));
+  tmpFont := TFont.Create;
+  with tmpFont do begin 
+    Size := 12;
+    Name :='黑体';
+    Color:=$986800;
+  end;
+  (*
+  btnCustomInstall:=BtnCreate(WizardForm.Handle,DpiScale(540),DpiScale(378),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
+  BtnSetEvent(btnCustomInstall,BtnClickEventID,WrapBtnCallback(@btnCustomInstallOnClick,1));
+  BtnSetText(btnCustomInstall, '自定义');
+  BtnSetFont(btnCustomInstall, tmpFont.Handle);
+  BtnSetFontColor(btnCustomInstall,$986800,$986800,$986800,$AFAFAF);
+ *)
+
+
+ //初始化到{x,y}={211，305} {宽，高}={178，43}的位置，并且加载图片资源 
+  btnOneKey:=BtnCreate(WizardForm.Handle,DpiScale(240),DpiScale(200),DpiScale(177), DpiScale(43), ExpandConstant('{tmp}\btnOneKeyInstall.png'),2,False)
+  
+  BtnSetText(btnOneKey, '立即安装');
+  BtnOneKeyFont := TFont.Create;
+  with BtnOneKeyFont do begin 
+	Size := 10;
+	Name:='黑体';
+	Color:=$ffffff;
+  end;
+  BtnSetFont(btnOneKey, BtnOneKeyFont.Handle);
+  BtnSetFontColor(btnOneKey,$FAFAFA,$FFFFFF,$FFFFFF,$FFFFFF);
+  BtnSetEvent(btnOneKey,BtnClickEventID,WrapBtnCallback(@btnOneKey_OnClick,2));
+ 
+  lblWelcome := TLabel.Create(WizardForm);
+  with lblWelcome do
+  begin
+    Parent := WizardForm;
+    Caption := '统一浏览器';
+    Transparent := true;
+    Font.Size:= 25
+    Font.Name:='黑体'
+    Font.Color:=$000000
+    Left := DpiScale(230);
+    Top := DpiScale(110);
+  end;
+
+  lblAgree := TLabel.Create(WizardForm);
+  with lblAgree do
+  begin
+    Parent := WizardForm;
+    Caption := '我已阅读并同意';
+    Transparent := true;
+    Font.Size:= 10
+    Font.Name:='微软雅黑'
+    Font.Color:=$000000
+    Left := DpiScale(50);
+    Top := DpiScale(378);
+  end;
+  
+  lblLicense := TLabel.Create(WizardForm);
+  with lblLicense do
+  begin
+    Parent := WizardForm;
+    Caption := '《应用许可协议》';
+    Transparent := true;
+    Font.Size:= 10
+    Font.Name:='微软雅黑'
+    Font.Color:=$00BFFF
+    Left:= DpiScale(143);
+    Top := DpiScale(378);
+    OnClick:=@lblLicenseClick;
+    Cursor:=crHand;
+  end;
+  HoverEvent_Init(@OnHoverControlChanged);
+  // set directory selector component
+  edtSelectDir1 := TEdit.Create(WizardForm);
+  with edtSelectDir1 do
+  begin
+    Parent:= WizardForm;
+    Text := WizardForm.DirEdit.Text;
+    Font.Size:= 10
+    Font.Color:=$555555
+    Left:= DpiScale(33);
+    Top := DpiScale(330);
+    Width:= DpiScale(490);
+    Height:= DpiScale(24);
+    BorderStyle:=bsNone;
+    TabStop := false;
+    OnChange:=@EdtSelectDir1_EditChanged;
+  end;
+ 
+  btnSelectDir1:=BtnCreate(WizardForm.Handle,DpiScale(590),DpiScale(330),DpiScale(89), DpiScale(30), ExpandConstant('{tmp}\btn.png'), 1, False)
+  BtnSetEvent(btnSelectDir1,BtnClickEventID,WrapBtnCallback(@BtnSelectDir1_OnClick,1));
+  BtnSetText(btnSelectDir1, '浏览');
+  tmpFont := TFont.Create;
+  with tmpFont do begin 
+    Size := 12;
+    Name :='黑体';
+    Color:=$986800;
+  end;
+
+end;
+
 procedure InitializeWizard();
 var
   winW:integer;
@@ -886,7 +910,7 @@ begin
   DpiScalePctg  := 1000* CurrentDPI / 96;
 
   winW:=DpiScale(660)
-  winH:=DpiScale(480)
+  winH:=DpiScale(400)
 
   WizardForm.InnerNotebook.Hide;
   WizardForm.OuterNotebook.hide;
@@ -949,7 +973,7 @@ begin
   InitGui_PageInstall();
   InitGui_PageFinish();
   
-  PageState_Init();
+  //PageState_Init();
   
   PBOldProc:=SetWindowLong(WizardForm.ProgressGauge.Handle,-4,PBCallBack(@PBProc,4));
   
